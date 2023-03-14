@@ -56,7 +56,7 @@ function Lab() {
     const[searchResult, setSearchResult] = useState({result: null, searchTerm: 'React'})
 
 
-    setSearchTopStories = result => {
+    const setSearchTopStories = result => {
         const { hits, page } = result
 
         const oldHits = page !== 0 ? searchResult.result.hits : []
@@ -68,7 +68,7 @@ function Lab() {
         })
     }
 
-    fetchSearchTopStories = (searchTerm, page = 0) => {
+    const fetchSearchTopStories = (searchTerm, page = 0) => {
         fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
             .then(response => response.json())
             .then(result => setSearchTopStories(result))
