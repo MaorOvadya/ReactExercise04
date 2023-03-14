@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1'
 const PATH_SEARCH = '/search'
@@ -52,21 +52,18 @@ const Button = ({ onClick, className = '', children }) =>
     </button>
 
 
-export default class Lab extends Component {
+function Lab() {
+    const[searchResult, setSearchResult] = useState({result: null, searchTerm: 'React'})
 
-    state = {
-        result: null,
-        searchTerm: 'React'
-    }
 
     setSearchTopStories = result => {
         const { hits, page } = result
 
-        const oldHits = page !== 0 ? this.state.result.hits : []
+        const oldHits = page !== 0 ? searchResult.result.hits : []
 
         const updatedHits = [...oldHits, ...hits]
 
-        this.setState({
+        setSearchResult({
             result: { hits: updatedHits, page }
         })
     }
@@ -74,61 +71,61 @@ export default class Lab extends Component {
     fetchSearchTopStories = (searchTerm, page = 0) => {
         fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
             .then(response => response.json())
-            .then(result => this.setSearchTopStories(result))
+            .then(result => setSearchTopStories(result))
             .catch(err => err)
     }
 
-    componentDidMount() {
-        const { searchTerm } = this.state
-        this.fetchSearchTopStories(searchTerm)
+     useEffect(() =>  {
+        const { searchTerm } = searchResult
+        fetchSearchTopStories(searchTerm)
+    },[])
+
+    const onSearchChange = event => {
+        setSearchResult({ searchTerm: event.target.value })
     }
 
-    onSearchChange = event => {
-        this.setState({ searchTerm: event.target.value })
-    }
-
-    onSearchSubmit = event => {
-        const { searchTerm } = this.state
-        this.fetchSearchTopStories(searchTerm)
+    const onSearchSubmit = event => {
+        const { searchTerm } = searchResult
+        fetchSearchTopStories(searchTerm)
         event.preventDefault()
     }
 
-    onDismiss = id => {
+    const onDismiss = id => {
         const isNotId = item => item.objectID !== id
-        const updatedHits = this.state.result.hits.filter(isNotId)
-        this.setState({
-            result: { ...this.state.result, hits: updatedHits }
+        const updatedHits = searchResult.result.hits.filter(isNotId)
+        setSearchResult({
+            result: { ...searchResult.result, hits: updatedHits }
         })
     }
 
-    render() {
-        const { searchTerm, result } = this.state
-        const page = (result && result.page) || 0
-        return (
-            <div className="page">
-                <div className="interactions">
-                    <Search
-                        value={searchTerm}
-                        onChange={this.onSearchChange}
-                        onSubmit={this.onSearchSubmit}
-                    >
-                        Search
-                    </Search>
-                </div>
-                <div className="articles">
-                    {result && (
-                        <Table
-                            list={result.hits}
-                            onDismiss={this.onDismiss}
-                        />
-                    )}
-                </div>
-                <footer>
-                    <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
-                        More
-                    </Button>
-                </footer>
+    const { searchTerm, result } = searchResult
+    const page = (result && result.page) || 0
+    return(
+        <div className="page">
+            <div className="interactions">
+                <Search
+                    value={searchTerm}
+                    onChange={onSearchChange}
+                    onSubmit={onSearchSubmit}
+                >
+                    Search
+                </Search>
             </div>
-        )
+            <div className="articles">
+                {result && (
+                    <Table
+                        list={result.hits}
+                        onDismiss={onDismiss}
+                    />
+                )}
+            </div>
+            <footer>
+                <Button onClick={() => fetchSearchTopStories(searchTerm, page + 1)}>
+                    More
+                </Button>
+            </footer>
+        </div>
+    )
+
     }
-}
+
