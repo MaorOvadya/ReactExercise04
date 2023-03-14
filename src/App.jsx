@@ -1,32 +1,46 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const [tempUnit, setTempUnit] = useState('Farenheit')
+  // const [temp, setTemp] = useState(0)
+
+  const [airCon, setAirCon] = useState({
+    tempUnit: 'Farenheit',
+    temp: 0,
+    isOn: false
+  })
+
+  //componentDidMount + componentDidUpdate + componentWillUnmount
+  useEffect(() => {
+    console.log("Mounted")
+
+    return () => {
+      console.log("Unmounted")
+    }
+  })
+
+  const handleSwitch = () => {
+    //state updates are asynchronous
+    setAirCon(prevState => ({ ...prevState, isOn: !prevState.isOn }))
+  }
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <button onClick={handleSwitch}>Power Switch</button>
+      <p>Power is {airCon.isOn ? 'On' : 'Off'}</p>
+
+      <button onClick={() => setAirCon((prevState) => {
+        return {
+          ...prevState,
+          tempUnit: "Celsius"
+        }
+      })} >Change Unit</button>
+      <p>Temperature is in {airCon.tempUnit}</p>
+
+      <input type="number" value={airCon.temp} onChange={(e) => setAirCon((prevState) => ({ ...prevState, temp: e.target.value }))} />
+      <p>Temperature: {airCon.temp} degrees {airCon.tempUnit}</p>
     </div>
   )
 }
