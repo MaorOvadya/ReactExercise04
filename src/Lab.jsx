@@ -76,6 +76,7 @@ function Lab() {
     }
 
      useEffect(() =>  {
+        const { searchTerm } = searchResult
         fetchSearchTopStories(searchResult.searchTerm)
     },[])
 
