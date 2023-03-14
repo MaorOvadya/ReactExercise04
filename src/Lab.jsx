@@ -76,12 +76,11 @@ function Lab() {
     }
 
      useEffect(() =>  {
-        const { searchTerm } = searchResult
-        fetchSearchTopStories(searchTerm)
+        fetchSearchTopStories(searchResult.searchTerm)
     },[])
 
     const onSearchChange = event => {
-        setSearchResult({ searchTerm: event.target.value })
+        setSearchResult({...searchResult,searchTerm: event.target.value })
     }
 
     const onSearchSubmit = event => {
@@ -126,6 +125,6 @@ function Lab() {
             </footer>
         </div>
     )
+}
 
-    }
-
+export default Lab
